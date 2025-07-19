@@ -1,0 +1,14 @@
+name: My Action
+description: A GitHub Action that echoes a name and executes a Python script.
+inputs:
+  name:
+    description: 'The name to echo'
+    required: true
+    default: 'World'
+runs:
+  using: 'composite'
+  steps:
+    - name: Echo Name
+      run: echo "${{ inputs.name }}"
+    - name: Execute Python Script
+      run: python3 findTestbpx.py
