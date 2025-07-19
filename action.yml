@@ -10,5 +10,7 @@ runs:
   steps:
     - name: Echo Name
       run: echo "${{ inputs.name }}"
+      shell: bash
     - name: Execute Python Script
       run: python3 findTestbpx.py
+      shell: bash
