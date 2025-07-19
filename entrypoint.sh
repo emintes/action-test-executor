@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 findTestbox.py
+cd /workspace
+python3 findTestbox.py "$@"

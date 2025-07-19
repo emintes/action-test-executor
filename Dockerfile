@@ -1,12 +1,12 @@
 FROM python:3.11-slim
 
+# Setze das Arbeitsverzeichnis
+WORKDIR /workspace
+
 # Kopiere alle Dateien ins Image
-COPY entrypoint.sh /entrypoint.sh
+COPY . /workspace
 
 # Mache das Entrypoint-Skript ausführbar
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /workspace/entrypoint.sh
 
-# Installiere ggf. weitere Abhängigkeiten hier
-# RUN pip install -r requirements.txt
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/workspace/entrypoint.sh"]
