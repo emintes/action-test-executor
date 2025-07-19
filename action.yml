@@ -6,11 +6,7 @@ inputs:
     required: true
     default: 'World'
 runs:
-  using: 'composite'
-  steps:
-    - name: Echo Name
-      run: echo "${{ inputs.name }}"
-      shell: bash
-    - name: Execute Python Script
-      run: python3 findTestbpx.py
-      shell: bash
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.name }}
