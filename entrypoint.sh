@@ -3,6 +3,8 @@
 echo "=============="
 ls
 echo "=============="
-ls ..
 cd /workspace
+ls
+echo "=============="
+ls repo
 python3 findTestbox.py "$@"
