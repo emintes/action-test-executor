@@ -9,9 +9,6 @@ if __name__ == "__main__":
         print("<testPath> is the path to the folder where the testproject is placed")
         sys.exit(1)
 
-    files = [f for f in os.listdir('.') if os.path.isfile(f)]
-    print(files)
-
     testPath = sys.argv[1]
 
     testbox = Testbox(f"repo/{testPath}")
@@ -24,6 +21,9 @@ if __name__ == "__main__":
     if(result == False):
         sys.exit(1)
 
-    
+    result = testbox.runTest()
+    if(result == False):
+        sys.exit(1)
+        
     print("FERTIG")
     sys.exit(1)

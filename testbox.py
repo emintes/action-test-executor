@@ -1,6 +1,9 @@
+from time import time
 import serial.tools.list_ports
+import serial
 from projectFileReader import *
 import subprocess
+import time
 
 class Testbox():
 
@@ -43,4 +46,28 @@ class Testbox():
                 return False
 
         print("All testfiles copied successfully.")
+        print("Restart Testbox...")
+        
+        with serial.Serial(self.testbox_port, 115200, timeout=2) as ser:
+            ser.write(b'import machine\n')
+            ser.write(b'machine.reset()\n')
+
+        time.sleep(3)
         return True
+    
+    def runTest(self):
+        if not self.testbox_port:
+            print("Error: No Testbox port set. Please initialize Testbox first.")
+            return False
+
+        with serial.Serial(self.testbox_port, 115200, timeout=2) as ser:
+            print('Starte Test...')
+            ser.write(b'tfc.start()\n')
+            
+            start_time = time.time()
+            print("Empfange Daten von Testbox:")
+            while time.time() - start_time < 5:  # 5 Sekunden lang lesen
+                line = ser.readline()
+                if line:
+                    print(line.decode(errors='ignore').strip())
+            return True
