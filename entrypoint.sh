@@ -6,5 +6,6 @@ echo "=============="
 cd /workspace
 ls
 echo "=============="
-ls repo
+ls /workspace/repo
+echo "--------------"
 python3 testExecutor.py "$@"

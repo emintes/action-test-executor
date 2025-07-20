@@ -1,6 +1,5 @@
 from testbox import Testbox
 import sys
-import subprocess
 
 # Beispielnutzung:
 if __name__ == "__main__":
@@ -11,24 +10,15 @@ if __name__ == "__main__":
 
     testPath = sys.argv[1]
 
-    testbox = Testbox()
+    testbox = Testbox(testPath)
     testboxFound = testbox.init()
     if not testboxFound:
         print("Error: No Testbox found! Please connect the Testbox and try again.")
         sys.exit(1)
 
-    fileList = testbox.getListOfFilesToCopyFromProjectFile()
-    
-    #result = subprocess.run(["mpremote connect " + pyboard_port + " fs cp entrypoint.sh :entrypoint.sh"], capture_output=True, text=True, shell=True)
-    # Rückgabecode
-    #print("Return code:", result.returncode)
-
-    # Standardausgabe
-    #print("stdout:", result.stdout)
-
-    # Fehlerausgabe
-    #print("stderr:", result.stderr)
-
+    result = testbox.copyTestFiles()
+    if(result == False):
+        sys.exit(1)
         
     
     print("FERTIG")

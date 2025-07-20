@@ -1,8 +1,12 @@
 import serial.tools.list_ports
-import xml.etree.ElementTree as ET
+from projectFileReader import *
+import subprocess
 
 class Testbox():
-    def __init__(self):
+
+    def __init__(self, testPath):
+        self.testPath = testPath
+        self.projectFileReader = ProjectFileReader(testPath)
         self.testbox_port = None
 
     # Funktion zum Finden des Testbox-Ports
@@ -14,41 +18,29 @@ class Testbox():
             print(f"Port {port.device} - {port.description}")
             if "Pyboard" in port.description:
                 self.testbox_port = port.device
-                print(f"Testbox found at {pyboard_port}")
+                print(f"Testbox found at {self.testbox_port}")
                 return True
         return False
 
-    def getListOfFilesToCopyFromProjectFile(self, testPath):
-        try:
-            tree = ET.parse(testPath + '/project.etp')
-            root = tree.getroot()
-            print("Project file read successfully.")
-        except ET.ParseError as e:
-            print(f"Error parsing project file: {e}")
-            return None
-        
-                # Beispiel: Alle Elemente und deren Tag ausgeben
-        for elem in root.iter():
-            print(elem.tag, elem.text)
-
-        return None
-
-    def copyTestFiles(self, fileList):
+    def copyTestFiles(self):
         if not self.testbox_port:
             print("Error: No Testbox port set. Please initialize Testbox first.")
             return False
         
-        print(f"Copying test files from {testPath} to Testbox...")
+        fileList = self.projectFileReader.getListOfFilesToCopy()
+        print(f"Copying {len(fileList)} test files from {self.testPath} to Testbox...")
 
+        for file in fileList:
+            print(f"  Copying {file}...")
+            
+            command = f"mpremote connect {self.testbox_port} fs cp {self.testPath}/{file} :{file}"
+            result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
+            if result.returncode == 0:
+                print("    OK")
+            else:
+                print(f"    Error {result.stderr}")
+                return False
 
-        # Hier könnte der Code zum Kopieren der Testdateien auf die Testbox stehen
-        # Zum Beispiel:
-        result = subprocess.run(["mpremote connect " + self.testbox_port + " fs cp " + testPath + " :"], capture_output=True, text=True, shell=True)
-        
-        if result.returncode != 0:
-            print("Error copying files:", result.stderr)
-            return False
-        
-        print("Test files copied successfully.")
+        print("All testfiles copied successfully.")
         return True
