@@ -32,3 +32,6 @@ if __name__ == "__main__":
         print("stderr:", result.stderr)
     else:
         print("Kein Pyboard gefunden.")
+    
+    print("FERTIG")
+    sys.exit(1)
