@@ -1,5 +1,6 @@
 from testbox import Testbox
 import sys
+import os
 
 # Beispielnutzung:
 if __name__ == "__main__":
@@ -8,9 +9,12 @@ if __name__ == "__main__":
         print("<testPath> is the path to the folder where the testproject is placed")
         sys.exit(1)
 
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    print(files)
+
     testPath = sys.argv[1]
 
-    testbox = Testbox(testPath)
+    testbox = Testbox(f"repo/{testPath}")
     testboxFound = testbox.init()
     if not testboxFound:
         print("Error: No Testbox found! Please connect the Testbox and try again.")
@@ -19,7 +23,7 @@ if __name__ == "__main__":
     result = testbox.copyTestFiles()
     if(result == False):
         sys.exit(1)
-        
+
     
     print("FERTIG")
     sys.exit(1)

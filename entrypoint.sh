@@ -3,7 +3,7 @@
 echo "=============="
 ls
 echo "=============="
-cd /workspace
+cd workspace
 ls
 echo "=============="
 ls /workspace/repo
