@@ -4,6 +4,7 @@ import serial
 from projectFileReader import *
 import subprocess
 import time
+from testreport import Testreport
 
 class Testbox():
 
@@ -11,6 +12,7 @@ class Testbox():
         self.testPath = testPath
         self.projectFileReader = ProjectFileReader(testPath)
         self.testbox_port = None
+        self.testresport = Testreport(self.projectFileReader.getProjectName())
 
     # Funktion zum Finden des Testbox-Ports
     # Diese Funktion durchsucht alle seriellen Ports und gibt den Port zurück, der das Pyboard enthält.
@@ -61,7 +63,7 @@ class Testbox():
             return False
 
         with serial.Serial(self.testbox_port, 115200, timeout=2) as ser:
-            print('Starte Test...')
+            ser.readall()
             ser.write(b'tfc.start()\n')
             
             start_time = time.time()
@@ -69,5 +71,6 @@ class Testbox():
             while time.time() - start_time < 5:  # 5 Sekunden lang lesen
                 line = ser.readline()
                 if line:
-                    print(line.decode(errors='ignore').strip())
+                    self.testresport.addEntryByString(line.decode(errors='ignore').strip())
+
             return True

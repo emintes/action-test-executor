@@ -13,6 +13,12 @@ class ProjectFileReader:
         self.fileList = []
         self.readProjectFile()
 
+    def getProjectName(self):
+        tree = ET.parse(self.projectPath + '/project.etp')
+        root = tree.getroot()
+
+        return root.find('ProjectName').text
+
     def readProjectFile(self):
         # Hier könnte der Code zum Lesen der Projektdatei stehen
         # Zum Beispiel:

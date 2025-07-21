@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+		@media print 
+		{ 
+			.contentbox, #ResultTable { -webkit-print-color-adjust: exact; } 
+		}
+		
+		body,html { margin:0; padding:0; }
+		h1 { color: #3DCAB5; }
+		thead { text-align: left; }
+		#container { font-family: Arial; margin: 0 auto; padding: 10px 20px 50px 20px; background-color: #f5f5f5; width: 90%; max-width: 60em; }
+		.contentbox { background-color: #fff; border: solid 1px #ddd; border-radius: 6px; padding: 0px; margin-bottom: 15px; print-color-adjust: exact; }
+		.contentbox_headline { font-weight: bold; padding: 8px; background-color: #ddd; }
+		.contentbox_content { padding: 8px; display: flex; }		
+        #TestInfo { }
+        #DeviceInfo { }
+		.pie { width: 100px; height: 100px; float: left; margin-right: 30px; background-image: conic-gradient(#3DCAB5 ###PASSED_PERCENT###%, #E57B77 0%); border-radius: 50% }
+        #reportTable { clear: both; }
+		#ResultTable { width: 100%; border-collapse: collapse; background-color: #fff; border: 1px solid #ddd; print-color-adjust: exact; }
+		#ResultTable td { padding: 0.4em; border-bottom: 1px solid #ddd; }
+		#ResultTable th { padding: 0.4em; background-color: #ddd; }
+        .StepDescription { background-color: #3DCAB5; font-weight: bold; padding: 3px; }
+        .PassedStep { background-color: lime; font-weight: bold; width: 20%; }
+        .FailedStep { background-color: red; font-weight: bold; width: 20%; }
+		.PassedCheck { color: green; font-weight: bold; }
+		.FailedCheck { color: red; font-weight: bold; }
+		.ResultDescription { display: block; }
+		.PassedLabel { background-color: lime; text-align: center; padding: 5px; font-size: 25px; font-weight: bold; margin-bottom: 10px; }
+		.FailedLabel { background-color: red;  text-align: center; padding: 5px; font-size: 25px; font-weight: bold; margin-bottom: 10px; }
+    </style>
+    <title>Testreport</title>
+</head>
+<body>
+    <div id="container">
+        <h1>Testreport - ###TEST_TITLE###</h1>
+        <div id="TestInfo">
+			Tested on ###TEST_DATETIME### by ###TESTER_NAME###
+        </div>
+        <br>
+        <div id="reportTable">
+            <h2>Testresults</h2>
+			
+			<div class="contentbox">
+				<div class="contentbox_headline">Overview</div>
+				<div class="contentbox_content">
+				<div class="pie"></div>
+				<div>
+					###RESULT_SUMMARY###
+				</div>
+				</div>
+			</div>
+			
+			
+			
+            <table id="ResultTable">
+				<thead>
+					<tr>
+						<th>Description</th>
+						<th style="width: 10em">Expected</th>
+						<th style="width: 7em;">Value</th>
+						<th style="width: 6em;">Result</th>
+					</tr>
+				</thead>
+				<tbody>
+                ###RESULT_TABLE_ROWS###
+				</tbody>
+            </table>
+        </div>
+		<br>
+		<div id="Appendix">
+			<h2>Appendix</h2>
+			###APPENDIX###
+		</div>
+		<div id="DeviceInfo">
+            <h2>Used devices</h2>
+			###USED_DEVICES###
+        </div>
+    </div>
+</body>
+</html>

@@ -22,8 +22,12 @@ if __name__ == "__main__":
         sys.exit(1)
 
     result = testbox.runTest()
+    htmlReport = testbox.testresport.createHtmlReport("testreportTemplate.html")
+
+    with open("testreport.html", "w", encoding="utf-8") as f:
+        f.write(htmlReport)
+
     if(result == False):
         sys.exit(1)
-        
-    print("FERTIG")
-    sys.exit(1)
+    else:    
+        sys.exit(0)
