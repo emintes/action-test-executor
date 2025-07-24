@@ -73,4 +73,4 @@ class Testbox():
                 if line:
                     self.testresport.addEntryByString(line.decode(errors='ignore').strip())
 
-            return True
+            return (self.testresport.failedCnt == 0)
