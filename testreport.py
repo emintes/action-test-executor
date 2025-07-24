@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from tracedrawer import TraceDrawer
 
 class Teststep():
     def __init__(self, name):
@@ -40,6 +41,8 @@ class Testreport:
         self.failedCnt = 0
         self.currentTeststep = None
         self.consoleOutputs = []
+        self.traceDrawer = TraceDrawer()
+        self.testresultPictures = []
 
     def __str__(self):
         return f"{self.title} - Serial: {self.boxSerialNumber}, HW: {self.boxHWVersion}, SW: {self.boxSWVersion}, Result: {self.testresult}"
@@ -155,9 +158,17 @@ class Testreport:
             print(result)
 
         elif "[APPEND TRACE]" in parts[0]:
-            result = Testresult(description=parts[1].strip())
-            self.currentTeststep.testresults.append(result)
-            self.updateTestresult(result.result)
+            description = parts[1]
+
+            self.traceDrawer.create_new_chart(description)
+
+            for i in range(0, len(parts) - 2, 3):
+                timestep_ms = float(parts[i + 3]) / 1000.0
+                self.traceDrawer.add_data(parts[i + 2], timestep_ms, parts[i + 4])
+
+            picture = self.traceDrawer.get_chart_bitmap()
+
+            self.testresultPictures.append(picture)
 
         elif "[TEST FINISHED]" in parts[0]:
 
@@ -193,7 +204,10 @@ class Testreport:
         result += "</table>\n"
         return result
 
-
+    def convert_bitmap_to_base64(self, png_bytes: bytes):
+        import base64
+        return base64.b64encode(png_bytes).decode('utf-8')
+    
     def createHtmlReport(self, template):
         if not os.path.exists(template):
             print("Error: Template file for testreport not found.")
@@ -293,7 +307,7 @@ class Testreport:
         html = html.replace("###FAILED_PERCENT###", f"{100 - result_quote_int:0}")
 
         appendix = ""
-        for pic in getattr(self, "testResultPictures", []):
+        for pic in getattr(self, "testresultPictures", []):
             b64_pic = self.convert_bitmap_to_base64(pic)
             appendix += f'<img alt="Appendix Image" src="data:image/png;base64,{b64_pic}" /><br>'
 

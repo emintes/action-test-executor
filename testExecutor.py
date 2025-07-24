@@ -24,7 +24,7 @@ if __name__ == "__main__":
     result = testbox.runTest()
     htmlReport = testbox.testresport.createHtmlReport("testreportTemplate.html")
 
-    with open("testreport.html", "w", encoding="utf-8") as f:
+    with open("Testreport.html", "w", encoding="utf-8") as f:
         f.write(htmlReport)
 
     if(result == False):
