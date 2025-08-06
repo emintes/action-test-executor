@@ -192,7 +192,7 @@ class Testreport:
 
         else:
             if self.currentTeststep:
-                self.currentTeststep.consoleOutputs.append(entry)
+                self.consoleOutputs.append(entry)
 
 
     def version_info_to_html(self, serialNumber, hwVersion, swVersion):

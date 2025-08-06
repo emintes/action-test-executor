@@ -11,6 +11,8 @@ class ProjectFileReader:
         self.projectPath = projectPath
         self.teststeps = []
         self.fileList = []
+        self.commands = ["", "", ""]
+        self.commandArgs = ["", "", ""]
         self.readProjectFile()
 
     def getProjectName(self):
@@ -25,7 +27,12 @@ class ProjectFileReader:
         tree = ET.parse(self.projectPath + '/project.etp')
         root = tree.getroot()
 
-        insideTeststepList = False
+        self.commands[0] = root.find('CmdExeCommand1').text or ""
+        self.commands[1] = root.find('CmdExeCommand2').text or ""
+        self.commands[2] = root.find('CmdExeCommand3').text or ""
+        self.commandArgs[0] = root.find('CmdExeParameter1').text or ""
+        self.commandArgs[1] = root.find('CmdExeParameter2').text or ""
+        self.commandArgs[2] = root.find('CmdExeParameter3').text or ""
 
         for teststep in root.iter('Teststep'):
             

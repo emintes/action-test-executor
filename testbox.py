@@ -62,15 +62,36 @@ class Testbox():
             print("Error: No Testbox port set. Please initialize Testbox first.")
             return False
 
-        with serial.Serial(self.testbox_port, 115200, timeout=2) as ser:
+        with serial.Serial(self.testbox_port, 115200, timeout=5) as ser:
             ser.readall()
             ser.write(b'tfc.start()\n')
             
-            start_time = time.time()
             print("Empfange Daten von Testbox:")
-            while time.time() - start_time < 5:  # 5 Sekunden lang lesen
+            while True:  # 5 Sekunden lang lesen
                 line = ser.readline()
                 if line:
-                    self.testresport.addEntryByString(line.decode(errors='ignore').strip())
+                    line = line.decode(errors='ignore').strip()
+
+                    if("[EXECUTE COMMAND]" in line):
+                        parts = line.split(";")
+                        cmdNumber = int(parts[1])-1     #array index is 0-based, command 1, 2, 3 --> array index 0, 1, 2
+                        userArgs = parts[2]
+                        command = self.projectFileReader.commands[cmdNumber]
+                        args = self.projectFileReader.commandArgs[cmdNumber]
+                        self.testresport.consoleOutputs.append(" ".join(["Executing command:", command, "with args:", args, userArgs]))
+
+                        result = subprocess.run([command, args + " " + userArgs], shell=True, capture_output=True, text=True)
+                        self.testresport.consoleOutputs.append(result.stdout)
+
+                        ser.write(("tfc.setCommandExecutionResult(" + str(result.returncode) + ")\n").encode())
+                    else:
+                        self.testresport.addEntryByString(line)
+
+                else:
+                    break
 
             return (self.testresport.failedCnt == 0)
+    
+    def combine(a: str | None, b: str | None) -> str | None:
+        parts = [x for x in (a, b) if x is not None]
+        return " ".join(parts) if parts else None
