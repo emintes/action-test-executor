@@ -1,20 +1,23 @@
 FROM python:3.11-slim
 
+# Build-Args für optionale Anpassungen
+ARG EXTRA_COMMANDS=""
+
 # Setze das Arbeitsverzeichnis
 WORKDIR /workspace
 
 # Kopiere alle Dateien ins Image
 COPY . /workspace
 
-#install libopenblas and gcc for numpy
-#RUN apt update && apt install -y gcc g++
-#RUN apt update && apt install -y libopenblas0
 RUN apt update
-#RUN apt install -y gcc
-#RUN apt install -y g++
-#RUN apt install -y python3-dev
-#RUN apt install -y build-essential
-#RUN apt install -y libopenblas-dev
+
+# Führe zusätzliche Shell-Commands aus, wenn gesetzt
+RUN if [ -n "${EXTRA_COMMANDS}" ]; then \
+        echo "Running extra commands:" && \
+        printf '%b' "$EXTRA_COMMANDS" > /tmp/extra_commands.sh && \
+        chmod +x /tmp/extra_commands.sh && \
+        bash /tmp/extra_commands.sh; \
+    fi
 
 RUN apt install -y libopenjp2-7
 
