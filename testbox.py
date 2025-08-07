@@ -80,8 +80,12 @@ class Testbox():
                         args = self.projectFileReader.commandArgs[cmdNumber]
                         self.testresport.consoleOutputs.append(" ".join(["Executing command:", command, "with args:", args, userArgs]))
 
-                        result = subprocess.run([command, args + " " + userArgs], shell=True, capture_output=True, text=True)
-                        self.testresport.consoleOutputs.append(result.stdout)
+                        cmd = command + " " + args + " " + userArgs
+                        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+
+                        if(self.projectFileReader.showConsoleOutput[cmdNumber]==True):
+                            self.testresport.consoleOutputs.append(result.stdout)
+                            self.testresport.consoleOutputs.append(result.stderr)
 
                         ser.write(("tfc.setCommandExecutionResult(" + str(result.returncode) + ")\n").encode())
                     else:

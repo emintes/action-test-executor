@@ -1,8 +1,5 @@
 FROM python:3.11-slim
 
-# Build-Args für optionale Anpassungen
-ARG EXTRA_COMMANDS=""
-
 # Setze das Arbeitsverzeichnis
 WORKDIR /workspace
 
@@ -10,14 +7,6 @@ WORKDIR /workspace
 COPY . /workspace
 
 RUN apt update
-
-# Führe zusätzliche Shell-Commands aus, wenn gesetzt
-RUN if [ -n "${EXTRA_COMMANDS}" ]; then \
-        echo "Running extra commands:" && \
-        printf '%b' "$EXTRA_COMMANDS" > /tmp/extra_commands.sh && \
-        chmod +x /tmp/extra_commands.sh && \
-        bash /tmp/extra_commands.sh; \
-    fi
 
 RUN apt install -y libopenjp2-7
 
@@ -32,6 +21,8 @@ RUN apt install -y \
     libfribidi-dev \
     libxcb1 \
     libpng-dev
+
+RUN apt install -y dos2unix
 
 RUN pip install --upgrade pip
 

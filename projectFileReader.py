@@ -1,4 +1,6 @@
 from logging import root
+import os
+import sys
 import xml.etree.ElementTree as ET
 
 class Teststep:
@@ -13,6 +15,7 @@ class ProjectFileReader:
         self.fileList = []
         self.commands = ["", "", ""]
         self.commandArgs = ["", "", ""]
+        self.showConsoleOutput = [True, True, True]
         self.readProjectFile()
 
     def getProjectName(self):
@@ -22,8 +25,10 @@ class ProjectFileReader:
         return root.find('ProjectName').text
 
     def readProjectFile(self):
-        # Hier könnte der Code zum Lesen der Projektdatei stehen
-        # Zum Beispiel:
+        if not os.path.isfile(self.projectPath + '/project.etp'):
+            print(f"Error: No project-file found in the test-project-folder ({self.projectPath}).")
+            sys.exit(1)
+
         tree = ET.parse(self.projectPath + '/project.etp')
         root = tree.getroot()
 
@@ -33,6 +38,9 @@ class ProjectFileReader:
         self.commandArgs[0] = root.find('CmdExeParameter1').text or ""
         self.commandArgs[1] = root.find('CmdExeParameter2').text or ""
         self.commandArgs[2] = root.find('CmdExeParameter3').text or ""
+        self.showConsoleOutput[0] = root.find('CmdShowConsole1').text=="true"
+        self.showConsoleOutput[1] = root.find('CmdShowConsole2').text=="true"
+        self.showConsoleOutput[2] = root.find('CmdShowConsole3').text=="true"   
 
         for teststep in root.iter('Teststep'):
             

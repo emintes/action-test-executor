@@ -174,10 +174,7 @@ class Testreport:
 
             print(f"Test finished (duration: {float(parts[2])/1000.0} sec)")
 
-            if len(self.consoleOutputs) > 0:
-                print("Console Outputs:")
-                for output in self.consoleOutputs:
-                    print(f"  {output}")
+            self.printConsoleOutput()
 
             color = ""
             resetColor = "\033[0m"
@@ -187,6 +184,19 @@ class Testreport:
                 color = "\033[91m"  # Rot
             print("=================================================================================================")
             print(f"Test finished with result: {color}{self.testresult}{resetColor}")
+            print(f"Passed: {self.passedCnt}, Failed: {self.failedCnt}")
+            print("=================================================================================================")
+
+        elif "[TEST ABORTED]" in parts[0]:
+            print(f"Test aborted")
+
+            self.printConsoleOutput()
+
+            color = ""
+            resetColor = "\033[0m"
+            color = "\033[91m"  # Rot
+            print("=================================================================================================")
+            print(f"Testresult: {color}{self.testresult}{resetColor}")
             print(f"Passed: {self.passedCnt}, Failed: {self.failedCnt}")
             print("=================================================================================================")
 
@@ -315,3 +325,8 @@ class Testreport:
 
         return html
 
+    def printConsoleOutput(self):
+        if len(self.consoleOutputs) > 0:
+            print("Console Outputs:")
+            for output in self.consoleOutputs:
+                print(f"    {output}")

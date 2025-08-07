@@ -2,14 +2,13 @@ from testbox import Testbox
 import sys
 import os
 
-# Beispielnutzung:
 if __name__ == "__main__":
-    if(len(sys.argv) != 2):
-        print("Error: Parameter missing. Usage: python findTestbox.py <testPath>")
-        print("<testPath> is the path to the folder where the testproject is placed")
-        sys.exit(1)
 
-    testPath = sys.argv[1]
+    testPath = os.getenv("TEST_PROJECT_FOLDER")
+
+    if(testPath is None):
+        print("Error: No Test project folder defined. Set environment variable with name 'TEST_PROJECT_FOLDER'.")
+        sys.exit(1)
 
     testbox = Testbox(f"repo/{testPath}")
     testboxFound = testbox.init()
@@ -24,7 +23,10 @@ if __name__ == "__main__":
     result = testbox.runTest()
     htmlReport = testbox.testresport.createHtmlReport("testreportTemplate.html")
 
-    with open("Testreport.html", "w", encoding="utf-8") as f:
+    if not os.path.exists("Reports"):
+        os.makedirs("Reports")
+
+    with open("Reports/Testreport.html", "w", encoding="utf-8") as f:
         f.write(htmlReport)
 
     if(result == False):
