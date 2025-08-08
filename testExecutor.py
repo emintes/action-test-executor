@@ -23,8 +23,8 @@ if __name__ == "__main__":
     result = testbox.runTest()
     htmlReport = testbox.testresport.createHtmlReport("testreportTemplate.html")
 
-    if not os.path.exists("repo/{testPath}/Reports"):
-        os.makedirs("repo/{testPath}/Reports")
+    if not os.path.exists(f"repo/{testPath}/Reports"):
+        os.makedirs(f"repo/{testPath}/Reports")
 
     with open("Reports/Testreport.html", "w", encoding="utf-8") as f:
         f.write(htmlReport)
