@@ -14,3 +14,5 @@ if [ -n "$EXTRA_COMMANDS" ]; then
 fi
 
 python3 testExecutor.py
+
+ls -R
