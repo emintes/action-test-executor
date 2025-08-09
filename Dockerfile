@@ -41,7 +41,5 @@ RUN pip3 install mpremote
 
 # Mache das Entrypoint-Skript ausführbar
 RUN chmod +x /workspace/entrypoint.sh
-RUN chmod +x /workspace/runExtraCommands.sh
-RUN chmod +x /workspace/runTest.sh
 
 ENTRYPOINT ["/workspace/entrypoint.sh"]
