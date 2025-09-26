@@ -1,6 +1,7 @@
 from testbox import Testbox
 import sys
 import os
+import stat
 
 if __name__ == "__main__":
 
@@ -23,11 +24,20 @@ if __name__ == "__main__":
     result = testbox.runTest()
     htmlReport = testbox.testresport.createHtmlReport("testreportTemplate.html")
 
-    if not os.path.exists(f"repo/{testPath}/Reports"):
-        os.makedirs(f"repo/{testPath}/Reports")
+    testreportPath = f"repo/{testPath}/Reports"
 
-    with open(f"repo/{testPath}/Reports/Testreport.html", "w", encoding="utf-8") as f:
+    if not os.path.exists(testreportPath):
+        os.makedirs(testreportPath)
+        os.chmod(testreportPath, 0o777)
+
+    with open(testreportPath+"/Testreport.html", "w", encoding="utf-8") as f:
         f.write(htmlReport)
+
+    # Setze Rechte so, dass der Datei-Besitzer lesen & schreiben darf
+    os.chmod(testreportPath+"/Testreport.html", 
+        stat.S_IRUSR | stat.S_IWUSR |  # Besitzer lesen + schreiben
+        stat.S_IRGRP | stat.S_IWGRP |  # Gruppe lesen + schreiben
+        stat.S_IROTH | stat.S_IWOTH)   # Andere lesen + schreiben
 
     if(result == False):
         sys.exit(1)
