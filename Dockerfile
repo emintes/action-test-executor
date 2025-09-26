@@ -39,6 +39,16 @@ RUN pip3 install --prefer-binary matplotlib==3.10.1
 RUN pip3 install pyserial
 RUN pip3 install mpremote
 
+# Jetzt alles fuer den ST-Link:
+RUN apt-get install -y git cmake make gcc libusb-1.0-0-dev gcc-arm-none-eabi
+#RUN rm -rf stlink
+RUN git clone https://github.com/stlink-org/stlink.git
+RUN make -C stlink release
+RUN make -C stlink/build/Release install
+RUN export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+RUN echo "/usr/local/lib" | tee /etc/ld.so.conf.d/stlink.conf
+RUN ldconfig
+
 # Mache das Entrypoint-Skript ausführbar
 RUN chmod +x /workspace/entrypoint.sh
 
