@@ -6,12 +6,19 @@ import stat
 if __name__ == "__main__":
 
     testPath = os.getenv("TEST_PROJECT_FOLDER")
+    testProjectFile = os.getenv("TEST_PROJECT_FILE")
 
     if(testPath is None):
         print("Error: No Test project folder defined. Set environment variable with name 'TEST_PROJECT_FOLDER'.")
-        sys.exit(1)
+        sys.exit(1)   
 
-    testbox = Testbox(f"repo/{testPath}")
+    if(testProjectFile is None):
+        testProjectFile = "project.etp"
+    
+    if(testProjectFile == ""):
+        testProjectFile = "project.etp"
+
+    testbox = Testbox(f"repo/{testPath}", testProjectFile)
     testboxFound = testbox.init()
     if not testboxFound:
         print("Error: No Testbox found! Please connect the Testbox and try again.")

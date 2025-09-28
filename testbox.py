@@ -5,14 +5,17 @@ from projectFileReader import *
 import subprocess
 import time
 from testreport import Testreport
+import hashlib
 
 class Testbox():
 
-    def __init__(self, testPath):
+    def __init__(self, testPath, projectFile):
         self.testPath = testPath
-        self.projectFileReader = ProjectFileReader(testPath)
+        self.projectFile = projectFile
+        self.projectFileReader = ProjectFileReader(testPath, projectFile)
         self.testbox_port = None
-        self.testresport = Testreport(self.projectFileReader.getProjectName())
+        self.testresport = Testreport(self.projectFileReader.projectName)
+        
 
     # Funktion zum Finden des Testbox-Ports
     # Diese Funktion durchsucht alle seriellen Ports und gibt den Port zurück, der das Pyboard enthält.
@@ -38,7 +41,7 @@ class Testbox():
         for file in fileList:
             print(f"  Copying {file}...")
             
-            command = f"mpremote connect {self.testbox_port} fs cp {self.testPath}/{file} :{file}"
+            command = f"mpremote connect {self.testbox_port} fs cp {self.testPath}/{file} :Tests/{file}"
             result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
             if result.returncode == 0:
@@ -46,6 +49,21 @@ class Testbox():
             else:
                 print(f"    Error {result.stderr}")
                 return False
+
+        # now the project - config file:
+        print(f"  Copying project config file...")
+        config_string = self.projectFileReader.getCheckboxConfigString()
+        with open("testconfig.conf", "w", encoding="utf-8") as f:
+            f.write(config_string)
+        
+        command = f"mpremote connect {self.testbox_port} fs cp testconfig.conf :Tests/testconfig.conf"
+        result = subprocess.run(command, capture_output=True, text=True, shell=True)
+
+        if result.returncode == 0:
+            print("    OK")
+        else:
+            print(f"    Error {result.stderr}")
+            return False
 
         print("All testfiles copied successfully.")
         print("Restart Testbox...")
