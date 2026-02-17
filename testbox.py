@@ -36,12 +36,14 @@ class Testbox():
             return False
         
         fileList = self.projectFileReader.getListOfFilesToCopy()
-        print(f"Copying {len(fileList)} test files from {self.testPath} to Testbox...")
+        targetFolder = "Tests/" + self.safe_folder_name(self.projectFileReader.projectName)
+
+        print(f"Copying {len(fileList)} test files from {self.testPath} to Testbox ({targetFolder})...")
 
         for file in fileList:
             print(f"  Copying {file}...")
             
-            command = f"mpremote connect {self.testbox_port} fs cp {self.testPath}/{file} :Tests/{file}"
+            command = f"mpremote connect {self.testbox_port} fs cp {self.testPath}/{file} :{targetFolder}/{file}"
             result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
             if result.returncode == 0:
@@ -56,7 +58,7 @@ class Testbox():
         with open("testconfig.conf", "w", encoding="utf-8") as f:
             f.write(config_string)
         
-        command = f"mpremote connect {self.testbox_port} fs cp testconfig.conf :Tests/testconfig.conf"
+        command = f"mpremote connect {self.testbox_port} fs cp testconfig.conf :{targetFolder}/testconfig.conf"
         result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
         if result.returncode == 0:
@@ -117,3 +119,54 @@ class Testbox():
     def combine(a: str | None, b: str | None) -> str | None:
         parts = [x for x in (a, b) if x is not None]
         return " ".join(parts) if parts else None
+    
+    def safe_folder_name(name, repl="_", max_len=64, ascii_only=False):
+        if name is None:
+            name = ""
+        s = str(name).strip()
+
+        # Konservativ: Windows- + FAT-Problemzeichen raus (funktioniert auch auf POSIX)
+        forbidden = set('<>:"/\\|?*')  # plus Separatoren
+        out = []
+        last_was_repl = False
+
+        for ch in s:
+            o = ord(ch)
+
+            # Steuerzeichen / NUL
+            if o < 32 or o == 0:
+                ch2 = repl
+            # Verbotene/ungünstige Zeichen ersetzen
+            elif ch in forbidden:
+                ch2 = repl
+            # Optional: nur ASCII
+            elif ascii_only and o > 127:
+                ch2 = repl
+            else:
+                ch2 = ch
+
+            if ch2 == repl:
+                if not last_was_repl:
+                    out.append(repl)
+                last_was_repl = True
+            else:
+                out.append(ch2)
+                last_was_repl = False
+
+        result = "".join(out).strip(" .")
+        result = result.strip(repl)
+
+        # Path-Traversal / leere Namen verhindern
+        if result in ("", ".", ".."):
+            result = "folder"
+
+        # Nicht mit Punkt enden lassen (FAT/Windows mögen das nicht)
+        result = result.rstrip(" .")
+
+        if max_len and len(result) > max_len:
+            result = result[:max_len].rstrip(" .").strip(repl)
+            if result in ("", ".", ".."):
+                result = "folder"
+
+        return result
+    
