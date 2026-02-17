@@ -37,6 +37,8 @@ class Testbox():
         
         fileList = self.projectFileReader.getListOfFilesToCopy()
         targetFolder = "Tests/" + self.safe_folder_name(self.projectFileReader.projectName)
+        
+        self.createFolderIfNotExists(targetFolder)
 
         print(f"Copying {len(fileList)} test files from {self.testPath} to Testbox ({targetFolder})...")
 
@@ -170,3 +172,10 @@ class Testbox():
 
         return result
     
+    def createFolderIfNotExists(self, folderPath):
+        command = f"mpremote connect {self.testbox_port} fs mkdir :{folderPath}"
+        result = subprocess.run(command, capture_output=True, text=True, shell=True)
+        if result.returncode == 0:
+            print(f"Folder '{folderPath}' created or already exists on Testbox.")
+        else:
+            print(f"Error creating folder '{folderPath}' on Testbox: {result.stderr}")
