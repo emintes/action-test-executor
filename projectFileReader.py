@@ -40,6 +40,11 @@ class ProjectFileReader:
         self.showConsoleOutput[1] = root.find('CmdShowConsole2').text=="true"
         self.showConsoleOutput[2] = root.find('CmdShowConsole3').text=="true"   
 
+        print(f"Loaded Project: {self.projectName}")
+
+        print("Following Teststeps found:")
+        print("active - name - numberOfRuns")
+
         for teststep in root.iter('Teststep'):
             teststep_active = teststep.find('Active').text.lower() == 'true'
             teststep_name = teststep.find('Name').text

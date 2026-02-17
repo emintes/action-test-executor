@@ -13,8 +13,10 @@ class Testbox():
         self.testPath = testPath
         self.projectFile = projectFile
         self.projectFileReader = ProjectFileReader(testPath, projectFile)
+        self.projectFolderName = self.safe_folder_name(self.projectFileReader.projectName)
         self.testbox_port = None
         self.testresport = Testreport(self.projectFileReader.projectName)
+
         
 
     # Funktion zum Finden des Testbox-Ports
@@ -36,8 +38,10 @@ class Testbox():
             return False
         
         fileList = self.projectFileReader.getListOfFilesToCopy()
-        targetFolder = "Tests/" + self.safe_folder_name(self.projectFileReader.projectName)
-        
+        targetFolder = "Tests/" + self.projectFolderName
+
+        print(f"Creating target folder '{targetFolder}' on Testbox if it does not exist...")
+
         self.createFolderIfNotExists(targetFolder)
 
         print(f"Copying {len(fileList)} test files from {self.testPath} to Testbox ({targetFolder})...")
@@ -86,6 +90,11 @@ class Testbox():
 
         with serial.Serial(self.testbox_port, 115200, timeout=5) as ser:
             ser.readall()
+            print(f"Load Test '{self.projectFolderName}'")
+            ser.write(b"tfc.loadTest('" + self.projectFolderName.encode() + b"')\n")
+            print("")
+            print("=== Start Test ===")
+
             ser.write(b'tfc.start()\n')
             
             print("Empfange Daten von Testbox:")
@@ -118,11 +127,11 @@ class Testbox():
 
             return (self.testresport.failedCnt == 0)
     
-    def combine(a: str | None, b: str | None) -> str | None:
+    def combine(self, a: str | None, b: str | None) -> str | None:
         parts = [x for x in (a, b) if x is not None]
         return " ".join(parts) if parts else None
     
-    def safe_folder_name(name, repl="_", max_len=64, ascii_only=False):
+    def safe_folder_name(self, name, repl="_", max_len=64, ascii_only=False):
         if name is None:
             name = ""
         s = str(name).strip()
